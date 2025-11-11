@@ -19,28 +19,45 @@ class Charrua_PB_Cart {
             $meta_group = Charrua_PB_Helper::get_meta( $gid );
             if ( ! Charrua_PB_Helper::is_enabled( $meta_group ) ) continue;
 
-            $field  = 'charrua_pb_group_' . $gid;
-            $choice = isset( $_POST[ $field ] ) ? (int) $_POST[ $field ] : 0;
-            if ( $choice <= 0 ) continue;
+            $field = 'charrua_pb_group_' . $gid;
+            
+            // Obtener las selecciones (puede ser un valor único o array)
+            $selections = isset( $_POST[ $field ] ) ? $_POST[ $field ] : [];
+            
+            // Normalizar a array
+            if ( ! is_array( $selections ) ) {
+                $selections = [ $selections ];
+            }
+            
+            // Filtrar selecciones válidas
+            $selections = array_filter( array_map( 'intval', $selections ), function( $choice ) {
+                return $choice > 0;
+            });
+            
+            if ( empty( $selections ) ) continue;
 
             $allowed_addons = array_map( 'intval', (array) $meta_group['addons'] );
-            if ( ! in_array( $choice, $allowed_addons, true ) ) continue;
+            
+            // Procesar cada selección
+            foreach ( $selections as $choice ) {
+                if ( ! in_array( $choice, $allowed_addons, true ) ) continue;
 
-            $addon = wc_get_product( $choice );
-            if ( ! $addon || ! $addon->is_purchasable() || ! $addon->is_in_stock() ) continue;
-            if ( (int) $choice === (int) $product_id ) continue;
+                $addon = wc_get_product( $choice );
+                if ( ! $addon || ! $addon->is_purchasable() || ! $addon->is_in_stock() ) continue;
+                if ( (int) $choice === (int) $product_id ) continue;
 
-            WC()->cart->add_to_cart(
-                $choice,
-                max( 1, (int) $quantity ),
-                0,
-                [],
-                [
-                    '_charrua_pb_is_addon'   => true,
-                    '_charrua_pb_parent_key' => $parent_key,
-                    '_charrua_pb_group_id'   => $gid,
-                ]
-            );
+                WC()->cart->add_to_cart(
+                    $choice,
+                    max( 1, (int) $quantity ),
+                    0,
+                    [],
+                    [
+                        '_charrua_pb_is_addon'   => true,
+                        '_charrua_pb_parent_key' => $parent_key,
+                        '_charrua_pb_group_id'   => $gid,
+                    ]
+                );
+            }
         }
     }
 }

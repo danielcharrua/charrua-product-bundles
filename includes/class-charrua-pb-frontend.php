@@ -21,9 +21,10 @@ class Charrua_PB_Frontend {
             $m = Charrua_PB_Helper::get_meta( $group_post->ID );
             if ( ! Charrua_PB_Helper::is_enabled( $m ) ) continue;
 
-            $label      = $m['title'] ?: get_the_title( $group_post );
-            $allow_none = Charrua_PB_Helper::allow_none( $m );
-            $none_label = trim( $m['none_label'] ) !== '' ? $m['none_label'] : 'None';
+            $label         = $m['title'] ?: get_the_title( $group_post );
+            $layout_type   = $m['layout_type'] ?: 'list';
+            $grid_columns  = $m['grid_columns'] ?: 2;
+            $selection_type = $m['selection_type'] ?: 'unique';
 
             $addon_ids = array_filter( $m['addons'] );
             if ( empty( $addon_ids ) ) continue;
@@ -39,46 +40,125 @@ class Charrua_PB_Frontend {
 
             echo '<input type="hidden" name="charrua_pb_groups_present[]" value="' . esc_attr( $group_id ) . '">';
 
-            echo '<div class="charrua-pb-group" style="margin:.85rem 0;border:1px solid #eee;padding:.75rem;border-radius:.5rem">';
-            echo '<strong style="display:block;margin-bottom:.5rem">' . esc_html( $label ) . '</strong>';
+            echo '<div class="charrua-pb-group">';
+            echo '<strong class="charrua-pb-group-title">' . esc_html( $label ) . '</strong>';
 
             $description = $m['description'];
             if ( $description ) {
-                echo '<div class="charrua-pb-group-description" style="color:#888;margin-top:8px;margin-bottom:8px;font-size:0.97em;">' . esc_html( $description ) . '</div>';
+                echo '<div class="charrua-pb-group-description">' . esc_html( $description ) . '</div>';
             }
 
             $name = 'charrua_pb_group_' . $group_id;
 
-            if ( $allow_none ) {
-                echo '<label style="display:flex;gap:.5rem;align-items:center;margin-bottom:.35rem">';
-                echo '<input type="radio" name="' . esc_attr( $name ) . '" value="" checked> ' . esc_html( $none_label );
-                echo '</label>';
+            // Contenedor para las opciones con clase según el layout
+            $container_class = 'charrua-pb-addons-container';
+            $container_style = '';
+            
+            if ( $layout_type === 'grid' ) {
+                $container_class .= ' charrua-pb-grid-layout';
+                $container_style = 'grid-template-columns:repeat(' . $grid_columns . ',1fr);';
+            } else {
+                $container_class .= ' charrua-pb-list-layout';
+            }
+
+            // Agregar clase según el tipo de selección
+            if ( $selection_type === 'multiple' ) {
+                $container_class .= ' charrua-pb-multiple-selection';
+            } else {
+                $container_class .= ' charrua-pb-unique-selection';
+            }
+
+            echo '<div class="' . esc_attr( $container_class ) . '"' . ($container_style ? ' style="' . esc_attr( $container_style ) . '"' : '') . '>';
+
+            // Campo hidden solo para selección única (radio buttons)
+            if ( $selection_type === 'unique' ) {
+                echo '<input type="radio" name="' . esc_attr( $name ) . '" value="" checked class="charrua-pb-none-option">';
             }
 
             foreach ( $addon_products as $ap ) {
                 $title = $ap->get_name();
                 $price = wc_price( wc_get_price_to_display( $ap ) );
                 $url   = get_permalink( $ap->get_id() );
-                printf(
-                    '<label style="display:flex;gap:.5rem;align-items:center;margin-bottom:.35rem">
-                        <input type="radio" name="%1$s" value="%2$d">
-                        <span>%3$s — %4$s</span>
-                        <a href="%5$s" target="_blank" style="margin-left:auto;font-size:.9em" aria-label="%3$s">
-                            <img alt="%3$s" src="%6$s" style="width:20px">
-                        </a>
-                    </label>',
-                    esc_attr( $name ),
-                    (int) $ap->get_id(),
-                    esc_html( $title ),
-                    wp_kses_post( $price ),
-                    esc_url( $url ),
-                    esc_url( CHARRUA_PB_URL . 'assets/img/link.svg' )
-                );
+                $product_image = wp_get_attachment_image_src( $ap->get_image_id(), 'thumbnail' );
+                $product_image_url = $product_image ? $product_image[0] : wc_placeholder_img_src( 'thumbnail' );
+                
+                // Determinar tipo de input y nombre
+                if ( $selection_type === 'multiple' ) {
+                    $input_type = 'checkbox';
+                    $input_name = $name . '[]'; // Array para múltiples selecciones
+                } else {
+                    $input_type = 'radio';
+                    $input_name = $name;
+                }
+                
+                // Obtener precio numérico para JavaScript
+                $numeric_price = wc_get_price_to_display( $ap );
+                
+                if ( $layout_type === 'grid' ) {
+                    printf(
+                        '<label>
+                            <input type="%9$s" name="%1$s" value="%2$d">
+                            <div class="charrua-pb-product-image">
+                                <img src="%7$s" alt="%3$s">
+                            </div>
+                            <span class="product-title">%3$s</span>
+                            <span class="product-price charrua-pb-price" data-price="%8$s">%4$s</span>
+                            <a href="%5$s" target="_blank" aria-label="Ver %3$s" onclick="event.stopPropagation();">
+                                <img alt="Ver producto" src="%6$s">
+                            </a>
+                        </label>',
+                        esc_attr( $input_name ),
+                        (int) $ap->get_id(),
+                        esc_html( $title ),
+                        wp_kses_post( $price ),
+                        esc_url( $url ),
+                        esc_url( CHARRUA_PB_URL . 'assets/img/link.svg' ),
+                        esc_url( $product_image_url ),
+                        esc_attr( $numeric_price ),
+                        esc_attr( $input_type )
+                    );
+                } else {
+                    printf(
+                        '<label>
+                            <input type="%8$s" name="%1$s" value="%2$d">
+                            <span class="product-title">%3$s</span>
+                            <span class="product-price charrua-pb-price" data-price="%7$s">%4$s</span>
+                            <a href="%5$s" target="_blank" aria-label="%3$s">
+                                <img alt="%3$s" src="%6$s">
+                            </a>
+                        </label>',
+                        esc_attr( $input_name ),
+                        (int) $ap->get_id(),
+                        esc_html( $title ),
+                        wp_kses_post( $price ),
+                        esc_url( $url ),
+                        esc_url( CHARRUA_PB_URL . 'assets/img/link.svg' ),
+                        esc_attr( $numeric_price ),
+                        esc_attr( $input_type )
+                    );
+                }
             }
 
-            echo '<small style="display:block;color:#777;margin-top:.25rem"></small>';
+            echo '</div>'; // Cerrar el contenedor de addons
+
             echo '</div>';
         }
+        
+        // Agregar calculador de total si hay grupos
+        if ( ! empty( $groups ) ) {
+            self::render_total_calculator( $product );
+        }
+    }
+    
+    private static function render_total_calculator( $product ) {
+        $base_price = wc_get_price_to_display( $product );
+        
+        echo '<div class="charrua-pb-total-calculator">';
+        echo '<div class="charrua-pb-total">';
+        echo '<span class="label">' . __( 'Total:', 'charrua-pb' ) . '</span>';
+        echo '<span class="price" data-base-price="' . esc_attr( $base_price ) . '">' . wc_price( $base_price ) . '</span>';
+        echo '</div>';
+        echo '</div>';
     }
 
     private static function get_matching_groups_for_product( $product_id ) : array {

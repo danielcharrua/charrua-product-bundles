@@ -20,11 +20,13 @@ define( 'CHARRUA_PB_URL', plugin_dir_url( __FILE__ ) );
 require_once CHARRUA_PB_DIR . 'includes/helpers-charrua-pb.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-cpt.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-admin-assets.php';
+require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-frontend-assets.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-admin-columns.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-admin-metaboxes.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-ajax.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-frontend.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-cart.php';
+require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-settings.php';
 
 register_activation_hook( __FILE__, function() {
     Charrua_PB_CPT::register();
@@ -42,6 +44,9 @@ add_action( 'save_post_' . Charrua_PB_CPT::POST_TYPE, [ 'Charrua_PB_Admin_Metabo
 add_filter( 'manage_edit-' . Charrua_PB_CPT::POST_TYPE . '_columns', [ 'Charrua_PB_Admin_Columns', 'add' ] );
 add_action( 'manage_' . Charrua_PB_CPT::POST_TYPE . '_posts_custom_column', [ 'Charrua_PB_Admin_Columns', 'render' ], 10, 2 );
 
+// Frontend assets
+add_action( 'wp_enqueue_scripts', [ 'Charrua_PB_Frontend_Assets', 'enqueue' ] );
+
 // AJAX (admin)
 add_action( 'wp_ajax_charrua_pb_search_product_cats', [ 'Charrua_PB_AJAX', 'search_product_cats' ] );
 add_action( 'wp_ajax_charrua_pb_search_products',     [ 'Charrua_PB_AJAX', 'search_products' ] );
@@ -49,3 +54,6 @@ add_action( 'wp_ajax_charrua_pb_search_products',     [ 'Charrua_PB_AJAX', 'sear
 // Frontend (render + cart)
 add_action( 'woocommerce_before_add_to_cart_button', [ 'Charrua_PB_Frontend', 'render_groups_on_product' ], 9 );
 add_action( 'woocommerce_add_to_cart',              [ 'Charrua_PB_Cart', 'maybe_add_selected_addons' ], 20, 6 );
+
+// Settings
+add_action( 'init', [ 'Charrua_PB_Settings', 'init' ] );

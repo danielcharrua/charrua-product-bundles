@@ -1,0 +1,221 @@
+/* Charrúa Product Bundles - Frontend Styles */
+
+.charrua-pb-group {
+    margin: .85rem 0;
+    border: 1px solid #eee;
+    padding: 1rem;
+    border-radius: .5rem;
+}
+
+.charrua-pb-group-description {
+    color: #888;
+    margin-top: 8px;
+    margin-bottom: 8px;
+    font-size: 0.97em;
+}
+
+.charrua-pb-addons-container {
+    margin-top: .5rem;
+}
+
+/* Layout de lista (por defecto) */
+.charrua-pb-list-layout label {
+    display: flex;
+    gap: .5rem;
+    align-items: center;
+    padding: .4rem .5rem;
+    border-radius: .25rem;
+    transition: background-color 0.2s ease;
+    margin-bottom: .35rem;
+    border: 1px solid #f4f4f4;
+    cursor: pointer;
+}
+
+.charrua-pb-list-layout label:hover {
+    background-color: #f8f9fa;
+}
+
+.charrua-pb-list-layout input[type="radio"],
+.charrua-pb-list-layout input[type="checkbox"] {
+    display: none; /* Ocultar radio buttons y checkboxes en list layout también */
+}
+
+.charrua-pb-list-layout label:has(input[type="radio"]:checked), 
+.charrua-pb-list-layout label:has(input[type="checkbox"]:checked),
+.charrua-pb-list-layout label.charrua-pb-selected {
+    border-color: #007cba;
+    background-color: #e8f4f8;
+    font-weight: 600;
+}
+
+.charrua-pb-list-layout .product-title {
+    flex: 1; 
+}
+
+.charrua-pb-list-layout .product-price {
+    text-align: end;
+}
+
+.charrua-pb-list-layout a {
+    font-size: .9em;
+}
+
+.charrua-pb-list-layout a img {
+    width: 20px;
+}
+
+/* Layout de grid */
+.charrua-pb-grid-layout {
+    display: grid;
+    gap: .5rem;
+    margin-top: .5rem;
+}
+
+.charrua-pb-grid-layout label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: .75rem .5rem;
+    border: 1px solid #f4f4f4;
+    border-radius: .5rem;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    min-height: 140px;
+    justify-content: flex-start;
+    position: relative;
+}
+
+.charrua-pb-grid-layout label:hover {
+    border-color: #007cba;
+    background-color: #f8f9fa;
+}
+
+.charrua-pb-grid-layout input[type="radio"],
+.charrua-pb-grid-layout input[type="checkbox"] {
+    display: none; /* Ocultar radio buttons y checkboxes en grid layout */
+}
+
+.charrua-pb-grid-layout label:has(input[type="radio"]:checked),
+.charrua-pb-grid-layout label:has(input[type="checkbox"]:checked),
+.charrua-pb-grid-layout label.charrua-pb-selected {
+    border-color: #007cba;
+    background-color: #e8f4f8;
+    font-weight: 600;
+}
+
+/* Estilos para imágenes de productos en grid */
+.charrua-pb-product-image {
+    width: 100px;
+    height: 100px;
+    margin-bottom: .5rem;
+    border-radius: .25rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.charrua-pb-product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+}
+
+.charrua-pb-grid-layout label:hover .charrua-pb-product-image img {
+    transform: scale(1.05);
+}
+
+.charrua-pb-grid-layout span {
+    font-size: .85em;
+    line-height: 1.2;
+    margin-bottom: .25rem;
+}
+
+.charrua-pb-grid-layout .product-title {
+    color: #333;
+    margin-bottom: .25rem;
+}
+
+.charrua-pb-grid-layout .product-price {
+    font-size: .8em;
+}
+
+.charrua-pb-grid-layout a {
+    margin-top: .5rem;
+    font-size: .8em;
+    opacity: 0.7;
+}
+
+.charrua-pb-grid-layout a img {
+    width: 16px;
+}
+
+/* Estilos para el título del grupo */
+.charrua-pb-group-title {
+    display: block;
+    margin-bottom: .5rem;
+}
+
+/* Campo hidden para None option */
+.charrua-pb-none-option {
+    display: none;
+}
+
+/* Responsive para grid */
+@media (max-width: 768px) {
+    .charrua-pb-grid-layout {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    
+    .charrua-pb-grid-layout label {
+        min-height: 120px;
+        padding: .5rem;
+    }
+    
+    .charrua-pb-product-image {
+        width: 50px;
+        height: 50px;
+    }
+}
+
+@media (max-width: 480px) {
+    .charrua-pb-grid-layout {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .charrua-pb-grid-layout label {
+        min-height: 100px;
+    }
+    
+    .charrua-pb-product-image {
+        width: 45px;
+        height: 45px;
+    }
+}
+
+/* Calculador de total */
+.charrua-pb-total-calculator {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+}
+
+.charrua-pb-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.charrua-pb-total .label {
+    color: #333;
+}
+
+.charrua-pb-total .price {
+    font-size: inherit;
+}

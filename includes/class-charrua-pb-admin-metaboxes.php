@@ -105,35 +105,68 @@ class Charrua_PB_Admin_Metaboxes {
 
 
     public static function mb_options( $post ) {
-        $m          = Charrua_PB_Helper::get_meta( $post->ID );
-        $title      = $m['title'] ?: '';
-        $allow_none = Charrua_PB_Helper::allow_none( $m ) ? 'yes' : 'no';
-        $enabled    = Charrua_PB_Helper::is_enabled( $m )  ? 'yes' : 'no';
-        $none_label = trim( $m['none_label'] ) !== '' ? $m['none_label'] : 'None';
+        $m             = Charrua_PB_Helper::get_meta( $post->ID );
+        $title         = $m['title'] ?: '';
+        $enabled       = Charrua_PB_Helper::is_enabled( $m )  ? 'yes' : 'no';
+        $layout_type   = $m['layout_type'] ?: 'list';
+        $grid_columns  = $m['grid_columns'] ?: 2;
+        $selection_type = $m['selection_type'] ?: 'unique';
 
         echo '<p><label for="charrua_pb_group_title"><strong>' . esc_html__( 'Visible title', 'charrua-pb' ) . '</strong></label>';
         echo '<input type="text" id="charrua_pb_group_title" name="charrua_pb_group_title" value="' . esc_attr( $title ) . '" placeholder="e.g. SIMs for GPS" style="width:100%"></p>';
 
-        echo '<p><label for="charrua_pb_allow_none"><strong>' . esc_html__( 'Allow “None”', 'charrua-pb' ) . '</strong></label><br>';
-        echo '<select id="charrua_pb_allow_none" name="charrua_pb_allow_none" style="width:100%">';
-        echo '<option value="yes" ' . selected( $allow_none, 'yes', false ) . '>' . esc_html__( 'Yes (optional)', 'charrua-pb' ) . '</option>';
-        echo '<option value="no"  ' . selected( $allow_none, 'no',  false ) . '>' . esc_html__( 'No (force one selection)', 'charrua-pb' ) . '</option>';
-        echo '</select></p>';
 
-        echo '<p><label for="charrua_pb_none_label"><strong>' . esc_html__( '“None” label (frontend)', 'charrua-pb' ) . '</strong></label>';
-        echo '<input type="text" id="charrua_pb_none_label" name="charrua_pb_none_label" value="' . esc_attr( $none_label ) . '" placeholder="None" style="width:100%">';
-        echo '<small style="color:#777">' . esc_html__( 'Used when “Allow None” is enabled.', 'charrua-pb' ) . '</small></p>';
 
         echo '<p><label for="charrua_pb_group_description"><strong>' . esc_html__( 'Description', 'charrua-pb' ) . '</strong></label>';
         echo '<textarea id="charrua_pb_group_description" name="charrua_pb_group_description" rows="2" style="width:100%" placeholder="' . esc_attr__( 'Optional description...', 'charrua-pb' ) . '">' . esc_textarea( $m['description'] ?? '' ) . '</textarea></p>';
+
+        echo '<hr><h4>' . esc_html__( 'Selection Options', 'charrua-pb' ) . '</h4>';
+        
+        echo '<p><label for="charrua_pb_selection_type"><strong>' . esc_html__( 'Selection Type', 'charrua-pb' ) . '</strong></label><br>';
+        echo '<select id="charrua_pb_selection_type" name="charrua_pb_selection_type" style="width:100%">';
+        echo '<option value="unique" ' . selected( $selection_type, 'unique', false ) . '>' . esc_html__( 'Single choice', 'charrua-pb' ) . '</option>';
+        echo '<option value="multiple" ' . selected( $selection_type, 'multiple', false ) . '>' . esc_html__( 'Multiple choice', 'charrua-pb' ) . '</option>';
+        echo '</select>';
+        echo '<small style="color:#777;display:block;margin-top:5px;">';
+        echo '<strong>' . esc_html__( 'Single choice:', 'charrua-pb' ) . '</strong> ' . esc_html__( 'Customer can select only ONE option from this group (e.g., choose one case, one warranty).', 'charrua-pb' ) . '<br>';
+        echo '<strong>' . esc_html__( 'Multiple choice:', 'charrua-pb' ) . '</strong> ' . esc_html__( 'Customer can select SEVERAL options to build their own bundle (e.g., lens + tripod + memory card).', 'charrua-pb' );
+        echo '</small></p>';
+
+        echo '<hr><h4>' . esc_html__( 'Layout Options', 'charrua-pb' ) . '</h4>';
+        
+        echo '<p><label for="charrua_pb_layout_type"><strong>' . esc_html__( 'Display Layout', 'charrua-pb' ) . '</strong></label><br>';
+        echo '<select id="charrua_pb_layout_type" name="charrua_pb_layout_type" style="width:100%">';
+        echo '<option value="list" ' . selected( $layout_type, 'list', false ) . '>' . esc_html__( 'List (default)', 'charrua-pb' ) . '</option>';
+        echo '<option value="grid" ' . selected( $layout_type, 'grid', false ) . '>' . esc_html__( 'Grid', 'charrua-pb' ) . '</option>';
+        echo '</select></p>';
+
+        echo '<p id="charrua_pb_grid_columns_wrapper" style="' . ( $layout_type !== 'grid' ? 'display:none;' : '' ) . '"><label for="charrua_pb_grid_columns"><strong>' . esc_html__( 'Grid Columns', 'charrua-pb' ) . '</strong></label>';
+        echo '<select id="charrua_pb_grid_columns" name="charrua_pb_grid_columns" style="width:100%">';
+        for ( $i = 1; $i <= 4; $i++ ) {
+            echo '<option value="' . $i . '" ' . selected( $grid_columns, $i, false ) . '>' . $i . ' ' . esc_html__( 'column(s)', 'charrua-pb' ) . '</option>';
+        }
+        echo '</select>';
+        echo '<small style="color:#777">' . esc_html__( 'Used when layout is set to Grid.', 'charrua-pb' ) . '</small></p>';
+        
+        ?>
+        <script>
+        jQuery(document).ready(function($) {
+            $('#charrua_pb_layout_type').on('change', function() {
+                if ($(this).val() === 'grid') {
+                    $('#charrua_pb_grid_columns_wrapper').show();
+                } else {
+                    $('#charrua_pb_grid_columns_wrapper').hide();
+                }
+            });
+        });
+        </script>
+        <?php
 
         echo '<hr><p><label for="charrua_pb_is_enabled"><strong>' . esc_html__( 'Status', 'charrua-pb' ) . '</strong></label><br>';
         echo '<label style="display:inline-flex;align-items:center;gap:.5rem">';
         echo '<input type="checkbox" id="charrua_pb_is_enabled" name="charrua_pb_is_enabled" value="yes" ' . checked( $enabled, 'yes', false ) . ' />';
         echo '<span>' . ( $enabled === 'yes' ? esc_html__( 'Active', 'charrua-pb' ) : esc_html__( 'Inactive', 'charrua-pb' ) ) . '</span>';
         echo '</label></p>';
-
-        echo '<p style="color:#777">' . esc_html__( 'Each group is an exclusive choice (max one add-on per group).', 'charrua-pb' ) . '</p>';
     }
 
     public static function save( $post_id ) {
@@ -143,9 +176,21 @@ class Charrua_PB_Admin_Metaboxes {
 
         update_post_meta( $post_id, Charrua_PB_Helper::MK_TITLE,       sanitize_text_field( $_POST['charrua_pb_group_title'] ?? '' ) );
         update_post_meta( $post_id, Charrua_PB_Helper::MK_DESCRIPTION, sanitize_textarea_field( $_POST['charrua_pb_group_description'] ?? '' ) );
-        update_post_meta( $post_id, Charrua_PB_Helper::MK_ALLOW_NONE,  ( ( $_POST['charrua_pb_allow_none'] ?? 'yes' ) === 'no' ? 'no' : 'yes' ) );
         update_post_meta( $post_id, Charrua_PB_Helper::MK_ENABLED,     isset( $_POST['charrua_pb_is_enabled'] ) ? 'yes' : 'no' );
-        update_post_meta( $post_id, Charrua_PB_Helper::MK_NONE_LABEL,  sanitize_text_field( $_POST['charrua_pb_none_label'] ?? '' ) );
+
+        // Guardar opciones de selección
+        $selection_type = sanitize_text_field( $_POST['charrua_pb_selection_type'] ?? 'unique' );
+        $selection_type = in_array( $selection_type, [ 'unique', 'multiple' ] ) ? $selection_type : 'unique';
+        update_post_meta( $post_id, Charrua_PB_Helper::MK_SELECTION_TYPE, $selection_type );
+
+        // Guardar opciones de layout
+        $layout_type = sanitize_text_field( $_POST['charrua_pb_layout_type'] ?? 'list' );
+        $layout_type = in_array( $layout_type, [ 'list', 'grid' ] ) ? $layout_type : 'list';
+        update_post_meta( $post_id, Charrua_PB_Helper::MK_LAYOUT_TYPE, $layout_type );
+        
+        $grid_columns = (int) ( $_POST['charrua_pb_grid_columns'] ?? 2 );
+        $grid_columns = max( 1, min( 4, $grid_columns ) ); // Entre 1 y 4 columnas
+        update_post_meta( $post_id, Charrua_PB_Helper::MK_GRID_COLUMNS, $grid_columns );
 
         $cats = isset( $_POST['charrua_pb_cond_cats'] ) ? array_map( 'intval', (array) $_POST['charrua_pb_cond_cats'] ) : [];
         update_post_meta( $post_id, Charrua_PB_Helper::MK_COND_CATS, $cats );
