@@ -26,7 +26,6 @@ require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-admin-metaboxes.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-ajax.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-frontend.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-cart.php';
-require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-settings.php';
 
 register_activation_hook( __FILE__, function() {
     Charrua_PB_CPT::register();
@@ -54,6 +53,3 @@ add_action( 'wp_ajax_charrua_pb_search_products',     [ 'Charrua_PB_AJAX', 'sear
 // Frontend (render + cart)
 add_action( 'woocommerce_before_add_to_cart_button', [ 'Charrua_PB_Frontend', 'render_groups_on_product' ], 9 );
 add_action( 'woocommerce_add_to_cart',              [ 'Charrua_PB_Cart', 'maybe_add_selected_addons' ], 20, 6 );
-
-// Settings
-add_action( 'init', [ 'Charrua_PB_Settings', 'init' ] );

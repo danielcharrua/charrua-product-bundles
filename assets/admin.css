@@ -1,1 +1,39 @@
-/* Admin styles (opcional) */
+/* Admin styles */
+
+/* Badge styles for columns */
+.charrua-pb-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.charrua-pb-badge .dashicons {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+}
+
+.charrua-pb-badge--on {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.charrua-pb-badge--off {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.charrua-pb-badge--unique {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.charrua-pb-badge--multiple {
+    background-color: #e2e3e5;
+    color: #383d41;
+}

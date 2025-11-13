@@ -10,35 +10,31 @@ document.addEventListener('DOMContentLoaded', function() {
             const radio = label.querySelector('input[type="radio"]');
             
             if (radio) {
-                // Manejar clics en el label para permitir deselección
+                // Manejar clics en el label completo
                 label.addEventListener('click', function(e) {
-                    e.preventDefault(); // Prevenir el comportamiento por defecto
+                    // Prevenir el comportamiento por defecto del label
+                    e.preventDefault();
                     
                     const groupName = radio.name;
                     const allRadiosInGroup = container.querySelectorAll(`input[name="${groupName}"]`);
+                    const wasChecked = radio.checked;
                     
-                    // Si este radio ya está seleccionado, deseleccionarlo
-                    if (radio.checked) {
-                        // Deseleccionar todos los radios del grupo
-                        allRadiosInGroup.forEach(r => {
-                            r.checked = false;
-                            r.closest('label')?.classList.remove('charrua-pb-selected');
-                        });
-                        
-                        // Seleccionar la opción "None" hidden si existe
+                    // Deseleccionar todos los radios del grupo primero
+                    allRadiosInGroup.forEach(r => {
+                        r.checked = false;
+                        r.closest('label')?.classList.remove('charrua-pb-selected');
+                    });
+                    
+                    // Si NO estaba seleccionado, seleccionarlo
+                    if (!wasChecked) {
+                        radio.checked = true;
+                        label.classList.add('charrua-pb-selected');
+                    } else {
+                        // Si estaba seleccionado, lo dejamos deseleccionado
+                        // y marcamos la opción "None" si existe
                         if (noneOption) {
                             noneOption.checked = true;
                         }
-                    } else {
-                        // Deseleccionar todos los otros radios del grupo
-                        allRadiosInGroup.forEach(r => {
-                            r.checked = false;
-                            r.closest('label')?.classList.remove('charrua-pb-selected');
-                        });
-                        
-                        // Seleccionar este radio
-                        radio.checked = true;
-                        label.classList.add('charrua-pb-selected');
                     }
                     
                     // Actualizar calculador después del cambio
@@ -61,15 +57,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const checkbox = label.querySelector('input[type="checkbox"]');
             
             if (checkbox) {
-                // Manejar clics en el label para checkboxes
-                label.addEventListener('click', function(e) {
-                    e.preventDefault(); // Prevenir el comportamiento por defecto
-                    
-                    // Toggle del checkbox
-                    checkbox.checked = !checkbox.checked;
-                    
+                // Manejar cambios en el checkbox
+                checkbox.addEventListener('change', function(e) {
                     // Actualizar clase visual
-                    if (checkbox.checked) {
+                    if (this.checked) {
                         label.classList.add('charrua-pb-selected');
                     } else {
                         label.classList.remove('charrua-pb-selected');
@@ -95,75 +86,42 @@ document.addEventListener('DOMContentLoaded', function() {
     const multipleContainers = document.querySelectorAll('.charrua-pb-multiple-selection');
     multipleContainers.forEach(handleMultipleSelection);
     
-    // Para containers de lista, usar el mismo comportamiento que grid (selección/deselección)
-    const listContainers = document.querySelectorAll('.charrua-pb-list-layout');
-    
-    listContainers.forEach(container => {
-        const labels = container.querySelectorAll('label');
-        const noneOption = container.querySelector('.charrua-pb-none-option');
-        
-        labels.forEach(label => {
-            const radio = label.querySelector('input[type="radio"]');
-            
-            if (radio) {
-                // Manejar clics en el label para permitir deselección (igual que grid)
-                label.addEventListener('click', function(e) {
-                    e.preventDefault(); // Prevenir el comportamiento por defecto
-                    
-                    const groupName = radio.name;
-                    const allRadiosInGroup = container.querySelectorAll(`input[name="${groupName}"]`);
-                    
-                    // Si este radio ya está seleccionado, deseleccionarlo
-                    if (radio.checked) {
-                        // Deseleccionar todos los radios del grupo
-                        allRadiosInGroup.forEach(r => {
-                            r.checked = false;
-                            r.closest('label')?.classList.remove('charrua-pb-selected');
-                        });
-                        
-                        // Seleccionar la opción "None" hidden si existe
-                        if (noneOption) {
-                            noneOption.checked = true;
-                        }
-                    } else {
-                        // Deseleccionar todos los otros radios del grupo
-                        allRadiosInGroup.forEach(r => {
-                            r.checked = false;
-                            r.closest('label')?.classList.remove('charrua-pb-selected');
-                        });
-                        
-                        // Seleccionar este radio
-                        radio.checked = true;
-                        label.classList.add('charrua-pb-selected');
-                    }
-                    
-                    // Actualizar calculador después del cambio
-                    updateTotalCalculator();
-                });
-                
-                // Inicializar estado
-                if (radio.checked) {
-                    label.classList.add('charrua-pb-selected');
-                }
-            }
-        });
-    });
-    
     // Inicializar calculador de total
     initializeTotalCalculator();
 });
 
+// Variable global para guardar referencia al input de cantidad
+let cachedQuantityInput = null;
+
 // Función para inicializar el calculador de total
 function initializeTotalCalculator() {
     const calculator = document.querySelector('.charrua-pb-total-calculator');
-    if (!calculator) return;
-    
-    // Observar cambios en el campo de cantidad del producto
-    const quantityInput = document.querySelector('input.qty, input[name="quantity"], .quantity input');
-    if (quantityInput) {
-        quantityInput.addEventListener('change', updateTotalCalculator);
-        quantityInput.addEventListener('input', updateTotalCalculator);
+    if (!calculator) {
+        return;
     }
+    
+    // Guardar el último valor conocido
+    let lastValue = null;
+    
+    // Polling directo del valor del campo cada 200ms (más frecuente)
+    setInterval(function() {
+        // Buscar el campo de cantidad en cada iteración (por si cambia)
+        const quantityInput = document.querySelector('input.qty, input[name="quantity"], .quantity input[type="number"]');
+        
+        if (!quantityInput) {
+            return;
+        }
+        
+        // Guardar la referencia al input encontrado
+        cachedQuantityInput = quantityInput;
+        
+        const currentValue = quantityInput.value;
+        
+        if (currentValue !== lastValue) {
+            lastValue = currentValue;
+            updateTotalCalculator();
+        }
+    }, 200);
     
     // Calcular total inicial
     updateTotalCalculator();
@@ -192,8 +150,12 @@ function updateTotalCalculator() {
         }
     });
     
-    // Obtener cantidad
-    const quantityInput = document.querySelector('input.qty, input[name="quantity"], .quantity input');
+    // Obtener cantidad - usar el input cacheado si está disponible
+    let quantityInput = cachedQuantityInput;
+    if (!quantityInput) {
+        quantityInput = document.querySelector('input.qty, input[name="quantity"], .quantity input[type="number"]');
+    }
+    
     const quantity = parseInt(quantityInput?.value || '1') || 1;
     
     // Calcular total final
