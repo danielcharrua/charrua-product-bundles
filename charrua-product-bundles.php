@@ -3,7 +3,7 @@
  * Plugin Name: Bundled Products for WooCommerce – Charrúa
  * Plugin URI: https://charrua.es
  * Description: Añade extras a productos y permite seleccionarlos desde la propia página de producto.
- * Version: 1.0.0
+ * Version: 1.1.0
  * Author: Daniel Pereyra Costas
  * Author URI: https://charrua.es
  * Text Domain: charrua-pb
@@ -11,7 +11,7 @@
 
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-define( 'CHARRUA_PB_VERSION', '1.0.0' );
+define( 'CHARRUA_PB_VERSION', '1.1.0' );
 define( 'CHARRUA_PB_FILE', __FILE__ );
 define( 'CHARRUA_PB_DIR', plugin_dir_path( __FILE__ ) );
 define( 'CHARRUA_PB_URL', plugin_dir_url( __FILE__ ) );
