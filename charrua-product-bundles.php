@@ -18,6 +18,7 @@ define( 'CHARRUA_PB_URL', plugin_dir_url( __FILE__ ) );
 
 // Carga de clases.
 require_once CHARRUA_PB_DIR . 'includes/helpers-charrua-pb.php';
+require_once CHARRUA_PB_DIR . 'includes/compatibility/class-charrua-pb-compatibility-loader.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-cpt.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-admin-assets.php';
 require_once CHARRUA_PB_DIR . 'includes/class-charrua-pb-frontend-assets.php';
