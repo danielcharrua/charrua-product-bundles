@@ -76,7 +76,10 @@ class Charrua_PB_Frontend {
 
             foreach ( $addon_products as $ap ) {
                 $title = $ap->get_name();
-                $price = wc_price( wc_get_price_to_display( $ap ) );
+                
+                // Obtener precio con todas las compatibilidades aplicadas
+                $numeric_price = Charrua_PB_Price_Utils::get_compatible_price( $ap );
+                $price = wc_price( $numeric_price );
                 $url   = get_permalink( $ap->get_id() );
                 $product_image = wp_get_attachment_image_src( $ap->get_image_id(), 'thumbnail' );
                 $product_image_url = $product_image ? $product_image[0] : wc_placeholder_img_src( 'thumbnail' );
@@ -89,10 +92,7 @@ class Charrua_PB_Frontend {
                     $input_type = 'radio';
                     $input_name = $name;
                 }
-                
-                // Obtener precio numérico para JavaScript
-                $numeric_price = wc_get_price_to_display( $ap );
-                
+                                
                 if ( $layout_type === 'grid' ) {
                     printf(
                         '<label>
@@ -150,7 +150,8 @@ class Charrua_PB_Frontend {
     }
     
     private static function render_total_calculator( $product ) {
-        $base_price = wc_get_price_to_display( $product );
+        // Obtener precio base con todas las compatibilidades aplicadas
+        $base_price = Charrua_PB_Price_Utils::get_compatible_price( $product );
         
         echo '<div class="charrua-pb-total-calculator">';
         echo '<div class="charrua-pb-total">';

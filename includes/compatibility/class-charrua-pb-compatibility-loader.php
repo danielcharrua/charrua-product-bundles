@@ -16,10 +16,8 @@ class Charrua_PB_Compatibility_Loader {
         // Cargar utilidades de precios (siempre disponible)
         require_once dirname( __FILE__ ) . '/class-charrua-pb-price-utils.php';
         
-        // Compatibilidad con YITH Dynamic Pricing
-        if ( self::is_yith_dynamic_pricing_active() ) {
-            require_once dirname( __FILE__ ) . '/class-charrua-pb-yith-compatibility.php';
-        }
+        // Cargar compatibilidad con YITH Dynamic Pricing (siempre, maneja su propia detección)
+        require_once dirname( __FILE__ ) . '/class-charrua-pb-yith-compatibility.php';
         
         // Aquí se pueden añadir más compatibilidades en el futuro:
         
