@@ -105,12 +105,13 @@ class Charrua_PB_Admin_Metaboxes {
 
 
     public static function mb_options( $post ) {
-        $m             = Charrua_PB_Helper::get_meta( $post->ID );
-        $title         = $m['title'] ?: '';
-        $enabled       = Charrua_PB_Helper::is_enabled( $m )  ? 'yes' : 'no';
-        $layout_type   = $m['layout_type'] ?: 'list';
-        $grid_columns  = $m['grid_columns'] ?: 2;
-        $selection_type = $m['selection_type'] ?: 'unique';
+        $m                    = Charrua_PB_Helper::get_meta( $post->ID );
+        $title                = $m['title'] ?: '';
+        $enabled              = Charrua_PB_Helper::is_enabled( $m )  ? 'yes' : 'no';
+        $layout_type          = $m['layout_type'] ?: 'list';
+        $grid_columns         = $m['grid_columns'] ?: 2;
+        $grid_columns_mobile  = $m['grid_columns_mobile'] ?: 1;
+        $selection_type       = $m['selection_type'] ?: 'unique';
 
         echo '<p><label for="charrua_pb_group_title"><strong>' . esc_html__( 'Visible title', 'charrua-pb' ) . '</strong></label>';
         echo '<input type="text" id="charrua_pb_group_title" name="charrua_pb_group_title" value="' . esc_attr( $title ) . '" placeholder="e.g. SIMs for GPS" style="width:100%"></p>';
@@ -147,6 +148,14 @@ class Charrua_PB_Admin_Metaboxes {
         }
         echo '</select>';
         echo '<small style="color:#777">' . esc_html__( 'Used when layout is set to Grid.', 'charrua-pb' ) . '</small></p>';
+
+        echo '<p id="charrua_pb_grid_columns_mobile_wrapper" style="' . ( $layout_type !== 'grid' ? 'display:none;' : '' ) . '"><label for="charrua_pb_grid_columns_mobile"><strong>' . esc_html__( 'Grid Columns Mobile', 'charrua-pb' ) . '</strong></label>';
+        echo '<select id="charrua_pb_grid_columns_mobile" name="charrua_pb_grid_columns_mobile" style="width:100%">';
+        for ( $i = 1; $i <= 4; $i++ ) {
+            echo '<option value="' . $i . '" ' . selected( $grid_columns_mobile, $i, false ) . '>' . $i . ' ' . esc_html__( 'column(s)', 'charrua-pb' ) . '</option>';
+        }
+        echo '</select>';
+        echo '<small style="color:#777">' . esc_html__( 'Number of columns to display on mobile devices when layout is Grid.', 'charrua-pb' ) . '</small></p>';
         
         ?>
         <script>
@@ -154,8 +163,10 @@ class Charrua_PB_Admin_Metaboxes {
             $('#charrua_pb_layout_type').on('change', function() {
                 if ($(this).val() === 'grid') {
                     $('#charrua_pb_grid_columns_wrapper').show();
+                    $('#charrua_pb_grid_columns_mobile_wrapper').show();
                 } else {
                     $('#charrua_pb_grid_columns_wrapper').hide();
+                    $('#charrua_pb_grid_columns_mobile_wrapper').hide();
                 }
             });
         });
@@ -191,6 +202,10 @@ class Charrua_PB_Admin_Metaboxes {
         $grid_columns = (int) ( $_POST['charrua_pb_grid_columns'] ?? 2 );
         $grid_columns = max( 1, min( 4, $grid_columns ) ); // Entre 1 y 4 columnas
         update_post_meta( $post_id, Charrua_PB_Helper::MK_GRID_COLUMNS, $grid_columns );
+        
+        $grid_columns_mobile = (int) ( $_POST['charrua_pb_grid_columns_mobile'] ?? 1 );
+        $grid_columns_mobile = max( 1, min( 4, $grid_columns_mobile ) ); // Entre 1 y 4 columnas para móvil
+        update_post_meta( $post_id, Charrua_PB_Helper::MK_GRID_COLUMNS_MOBILE, $grid_columns_mobile );
 
         $cats = isset( $_POST['charrua_pb_cond_cats'] ) ? array_map( 'intval', (array) $_POST['charrua_pb_cond_cats'] ) : [];
         update_post_meta( $post_id, Charrua_PB_Helper::MK_COND_CATS, $cats );

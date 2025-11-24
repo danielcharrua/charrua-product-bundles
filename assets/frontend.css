@@ -165,10 +165,6 @@
 
 /* Responsive para grid */
 @media (max-width: 768px) {
-    .charrua-pb-grid-layout {
-        grid-template-columns: 1fr 1fr !important;
-    }
-    
     .charrua-pb-grid-layout label {
         min-height: 120px;
         padding: .5rem;
@@ -181,8 +177,21 @@
 }
 
 @media (max-width: 480px) {
-    .charrua-pb-grid-layout {
+    /* Columnas móviles configurables */
+    .charrua-pb-grid-columns-mobile-1 {
         grid-template-columns: 1fr !important;
+    }
+    
+    .charrua-pb-grid-columns-mobile-2 {
+        grid-template-columns: 1fr 1fr !important;
+    }
+    
+    .charrua-pb-grid-columns-mobile-3 {
+        grid-template-columns: 1fr 1fr 1fr !important;
+    }
+
+    .charrua-pb-grid-columns-mobile-4 {
+        grid-template-columns: 1fr 1fr 1fr 1fr !important;
     }
     
     .charrua-pb-grid-layout label {

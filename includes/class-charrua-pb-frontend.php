@@ -21,10 +21,11 @@ class Charrua_PB_Frontend {
             $m = Charrua_PB_Helper::get_meta( $group_post->ID );
             if ( ! Charrua_PB_Helper::is_enabled( $m ) ) continue;
 
-            $label         = $m['title'] ?: get_the_title( $group_post );
-            $layout_type   = $m['layout_type'] ?: 'list';
-            $grid_columns  = $m['grid_columns'] ?: 2;
-            $selection_type = $m['selection_type'] ?: 'unique';
+            $label                = $m['title'] ?: get_the_title( $group_post );
+            $layout_type          = $m['layout_type'] ?: 'list';
+            $grid_columns         = $m['grid_columns'] ?: 2;
+            $grid_columns_mobile  = $m['grid_columns_mobile'] ?: 1;
+            $selection_type       = $m['selection_type'] ?: 'unique';
 
             $addon_ids = array_filter( $m['addons'] );
             if ( empty( $addon_ids ) ) continue;
@@ -37,8 +38,6 @@ class Charrua_PB_Frontend {
             if ( empty( $addon_products ) ) continue;
 
             $group_id = (int) $group_post->ID;
-
-            echo '<input type="hidden" name="charrua_pb_groups_present[]" value="' . esc_attr( $group_id ) . '">';
 
             echo '<div class="charrua-pb-group">';
             echo '<strong class="charrua-pb-group-title">' . esc_html( $label ) . '</strong>';
@@ -55,7 +54,7 @@ class Charrua_PB_Frontend {
             $container_style = '';
             
             if ( $layout_type === 'grid' ) {
-                $container_class .= ' charrua-pb-grid-layout';
+                $container_class .= ' charrua-pb-grid-layout charrua-pb-grid-columns-mobile-' . $grid_columns_mobile;
                 $container_style = 'grid-template-columns:repeat(' . $grid_columns . ',1fr);';
             } else {
                 $container_class .= ' charrua-pb-list-layout';

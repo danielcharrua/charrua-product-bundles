@@ -4,25 +4,23 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class Charrua_PB_Cart {
     public static function maybe_add_selected_addons( $parent_key, $product_id, $quantity, $variation_id, $variation, $cart_item_data ) {
         // Evita loops si ya es add-on
-        if ( ! empty( $cart_item_data['_charrua_pb_is_addon'] ) ) return;
+        if ( ! empty( $cart_item_data[ Charrua_PB_Helper::MK_IS_ADDON ] ) ) return;
 
         // Verifica nonce
         if ( empty( $_POST[ Charrua_PB_Helper::NONCE_FIELD ] ) || ! wp_verify_nonce( $_POST[ Charrua_PB_Helper::NONCE_FIELD ], Charrua_PB_Helper::NONCE_ACTION ) ) return;
 
-        $groups_present = isset( $_POST['charrua_pb_groups_present'] ) ? (array) $_POST['charrua_pb_groups_present'] : [];
-        if ( empty( $groups_present ) ) return;
-
-        foreach ( $groups_present as $gid_raw ) {
-            $gid = (int) $gid_raw;
+        // Procesar directamente todos los campos charrua_pb_group_* del POST
+        foreach ( $_POST as $key => $value ) {
+            if ( strpos( $key, 'charrua_pb_group_' ) !== 0 ) continue;
+            
+            $gid = (int) str_replace( 'charrua_pb_group_', '', $key );
             if ( $gid <= 0 ) continue;
 
             $meta_group = Charrua_PB_Helper::get_meta( $gid );
             if ( ! Charrua_PB_Helper::is_enabled( $meta_group ) ) continue;
-
-            $field = 'charrua_pb_group_' . $gid;
             
             // Obtener las selecciones (puede ser un valor único o array)
-            $selections = isset( $_POST[ $field ] ) ? $_POST[ $field ] : [];
+            $selections = $value;
             
             // Normalizar a array
             if ( ! is_array( $selections ) ) {
@@ -52,9 +50,9 @@ class Charrua_PB_Cart {
                     0,
                     [],
                     [
-                        '_charrua_pb_is_addon'   => true,
-                        '_charrua_pb_parent_key' => $parent_key,
-                        '_charrua_pb_group_id'   => $gid,
+                        Charrua_PB_Helper::MK_IS_ADDON   => true,
+                        Charrua_PB_Helper::MK_PARENT_KEY => $parent_key,
+                        Charrua_PB_Helper::MK_GROUP_ID   => $gid,
                     ]
                 );
             }

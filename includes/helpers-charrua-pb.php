@@ -7,27 +7,34 @@ class Charrua_PB_Helper {
     const ADMIN_NONCE  = 'charrua_pb_admin_nonce';
 
     // Meta keys (todas nuevas, sin retrocompatibilidad).
-    const MK_TITLE          = '_charrua_pb_group_title';
-    const MK_DESCRIPTION    = '_charrua_pb_group_description';
-    const MK_ENABLED        = '_charrua_pb_is_enabled';     // 'yes' | 'no'
-    const MK_COND_CATS      = '_charrua_pb_cond_cats';      // int[]
-    const MK_COND_PRODUCTS  = '_charrua_pb_cond_products';  // int[]
-    const MK_ADDONS         = '_charrua_pb_addons';         // int[]
-    const MK_LAYOUT_TYPE    = '_charrua_pb_layout_type';    // 'list' | 'grid'
-    const MK_GRID_COLUMNS   = '_charrua_pb_grid_columns';   // int
-    const MK_SELECTION_TYPE = '_charrua_pb_selection_type'; // 'unique' | 'multiple'
+    const MK_TITLE               = '_charrua_pb_group_title';
+    const MK_DESCRIPTION         = '_charrua_pb_group_description';
+    const MK_ENABLED             = '_charrua_pb_is_enabled';          // 'yes' | 'no'
+    const MK_COND_CATS           = '_charrua_pb_cond_cats';           // int[]
+    const MK_COND_PRODUCTS       = '_charrua_pb_cond_products';       // int[]
+    const MK_ADDONS              = '_charrua_pb_addons';              // int[]
+    const MK_LAYOUT_TYPE         = '_charrua_pb_layout_type';         // 'list' | 'grid'
+    const MK_GRID_COLUMNS        = '_charrua_pb_grid_columns';        // int
+    const MK_GRID_COLUMNS_MOBILE = '_charrua_pb_grid_columns_mobile'; // int
+    const MK_SELECTION_TYPE      = '_charrua_pb_selection_type';      // 'unique' | 'multiple'
+    
+    // Meta keys para cart items (identificación de addons)
+    const MK_IS_ADDON            = '_charrua_pb_is_addon';    // bool - Marca que es un addon
+    const MK_PARENT_KEY          = '_charrua_pb_parent_key';  // string - Key del cart item padre
+    const MK_GROUP_ID            = '_charrua_pb_group_id';    // int - ID del grupo de addons
     
     public static function get_meta( $post_id ) : array {
         return [
-            'title'          => (string) get_post_meta( $post_id, self::MK_TITLE, true ),
-            'description'    => (string) get_post_meta( $post_id, self::MK_DESCRIPTION, true ),
-            'cats'           => array_map( 'intval', (array) get_post_meta( $post_id, self::MK_COND_CATS, true ) ),
-            'products_cond'  => array_map( 'intval', (array) get_post_meta( $post_id, self::MK_COND_PRODUCTS, true ) ),
-            'addons'         => array_map( 'intval', (array) get_post_meta( $post_id, self::MK_ADDONS, true ) ),
-            'enabled'        => (string) get_post_meta( $post_id, self::MK_ENABLED, true ),
-            'layout_type'    => (string) get_post_meta( $post_id, self::MK_LAYOUT_TYPE, true ) ?: 'list',
-            'grid_columns'   => (int) get_post_meta( $post_id, self::MK_GRID_COLUMNS, true ) ?: 2,
-            'selection_type' => (string) get_post_meta( $post_id, self::MK_SELECTION_TYPE, true ) ?: 'unique',
+            'title'               => (string) get_post_meta( $post_id, self::MK_TITLE, true ),
+            'description'         => (string) get_post_meta( $post_id, self::MK_DESCRIPTION, true ),
+            'cats'                => array_map( 'intval', (array) get_post_meta( $post_id, self::MK_COND_CATS, true ) ),
+            'products_cond'       => array_map( 'intval', (array) get_post_meta( $post_id, self::MK_COND_PRODUCTS, true ) ),
+            'addons'              => array_map( 'intval', (array) get_post_meta( $post_id, self::MK_ADDONS, true ) ),
+            'enabled'             => (string) get_post_meta( $post_id, self::MK_ENABLED, true ),
+            'layout_type'         => (string) get_post_meta( $post_id, self::MK_LAYOUT_TYPE, true ) ?: 'list',
+            'grid_columns'        => (int) get_post_meta( $post_id, self::MK_GRID_COLUMNS, true ) ?: 2,
+            'grid_columns_mobile' => (int) get_post_meta( $post_id, self::MK_GRID_COLUMNS_MOBILE, true ) ?: 1,
+            'selection_type'      => (string) get_post_meta( $post_id, self::MK_SELECTION_TYPE, true ) ?: 'unique',
         ];
     }
 
