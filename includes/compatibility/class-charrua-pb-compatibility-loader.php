@@ -19,6 +19,13 @@ class Charrua_PB_Compatibility_Loader {
         // Cargar compatibilidad con YITH Dynamic Pricing (siempre, maneja su propia detección)
         require_once dirname( __FILE__ ) . '/class-charrua-pb-yith-compatibility.php';
         
+        // Cargar compatibilidad con Discount Rules for WooCommerce (woo-discount-rules by Flycart)
+        require_once dirname( __FILE__ ) . '/class-charrua-pb-wdr-compatibility.php';
+        
+        // Cargar herramientas de debug (solo muestra para admins)
+        require_once dirname( __FILE__ ) . '/class-charrua-pb-debug.php';
+        add_action( 'wp', [ 'Charrua_PB_Debug', 'init' ] );
+        
         // Aquí se pueden añadir más compatibilidades en el futuro:
         
         // if ( self::is_woocommerce_subscriptions_active() ) {
@@ -36,6 +43,14 @@ class Charrua_PB_Compatibility_Loader {
     private static function is_yith_dynamic_pricing_active() {
         return class_exists( 'YWDPD_Frontend' ) || 
                class_exists( 'YITH_WC_Dynamic_Pricing_Discounts' );
+    }
+    
+    /**
+     * Detecta si Discount Rules for WooCommerce (woo-discount-rules) está activo
+     */
+    private static function is_woo_discount_rules_active() {
+        return class_exists( 'Charrua_PB_WDR_Compatibility' ) && 
+               Charrua_PB_WDR_Compatibility::is_active();
     }
     
     /**
@@ -57,6 +72,7 @@ class Charrua_PB_Compatibility_Loader {
      */
     public static function get_active_compatibilities() {
         return array(
+            'woo_discount_rules' => self::is_woo_discount_rules_active(),
             'yith_dynamic_pricing' => self::is_yith_dynamic_pricing_active(),
             'woocommerce_subscriptions' => self::is_woocommerce_subscriptions_active(),
             'wpml' => self::is_wpml_active(),
